@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Our Memories</title>
+
+<!-- นำเข้า Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- นำเข้า React และ Babel สำหรับรันโค้ดในหน้าเว็บ -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+body {
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
+background-color: #f8f5f0;
+font-family: 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif';
+}
+.font-serif {
+font-family: 'Playfair Display', serif;
+}
+@keyframes shake {
+0%, 100% { transform: translateX(0); }
+25% { transform: translateX(-10px); }
+50% { transform: translateX(10px); }
+75% { transform: translateX(-10px); }
+}
+.animate-shake {
+animation: shake 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+.animate-fadeIn {
+animation: fadeIn 0.5s ease-in-out;
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+// ==========================================
+// ⚙️ ตั้งค่าข้อมูลส่วนตัว (แก้ไขตรงนี้ได้เลย)
+// ==========================================
+const CONFIG = {
+couplePhoto: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
+passcode: "123456",
+passcodeHint: "ตัวเลขเรียง 1 ถึง 6",
+startDate: "2020-08-23T00:00:00",
+youtubeEmbedUrl: "https://www.youtube.com/embed/2Vv-BfVoq4g",
+letterText: "ขอบคุณสำหรับทุกช่วงเวลาที่ผ่านมานะ\nดีใจที่มีเธออยู่ข้างๆ ในทุกๆ วัน\nหวังว่าเราจะสร้างความทรงจำดีๆ\nและมีรูปในม้วนฟิล์มของเราเพิ่มขึ้นเรื่อยๆ นะ ❤️",
+photos: [
+"https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1517365830460-955ce3ccd263?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=600&q=80",
+"https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80"
+]
+};
+
+// ==========================================
+// 1. หน้าแรก: กล้องถ่ายรูป
+// ==========================================
+function CameraPage({ onNext }) {
+const [isFlashing, setIsFlashing] = useState(false);
+
+const handleShoot = () => {
+setIsFlashing(true);
+setTimeout(() => onNext(), 600);
+};
+
+return (
+<div className="min-h-screen bg-[#f8f5f0] flex flex-col items-center justify-center relative overflow-hidden">
+<div className={`absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-300 ${isFlashing ? 'opacity-100' : 'opacity-0'}`}></div>
+
+<div className="text-center mb-8">
+<h1 className="text-3xl text-[#4a3728] font-bold tracking-widest mb-2 font-serif">OUR MEMORIES</h1>
+<p className="text-[#8b7355] text-sm">กดปุ่มชัตเตอร์เพื่อเริ่มต้น</p>
+</div>
+
+<div className="w-80 h-56 bg-[#6b4423] rounded-xl relative border-t-4 border-[#4a2e15] shadow-[0_20px_40px_rgba(74,55,40,0.3)] flex items-center justify-center before:content-[''] before:absolute before:inset-2 before:border before:border-dashed before:border-[#8b5a2b] before:rounded-lg pointer-events-auto">
+<div className="absolute top-0 bottom-0 left-8 right-8 bg-[#5c3a1e] border-x border-[#4a2e15]"></div>
+<div className="absolute top-4 right-6 w-12 h-8 bg-black rounded border-2 border-[#d4af37] shadow-inner z-10"></div>
+<div className="absolute top-4 left-6 w-16 h-8 bg-[#e8dcc7] rounded-sm border-2 border-[#b89f7d] flex items-center justify-center z-10 shadow-sm">
+<div className="w-12 h-4 bg-white rounded-sm border border-[#d4af37]"></div>
+</div>
+
+<div className="w-40 h-40 bg-[#1a1a1a] rounded-full border-8 border-[#d4af37] flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden group z-10">
+<div className="absolute inset-0 border-[8px] border-[#2c2c2c] rounded-full z-10 pointer-events-none"></div>
+<img src={CONFIG.couplePhoto} alt="Couple" className="w-full h-full object-cover opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-700 sepia-[.3]" />
+<div className="absolute top-2 left-4 w-12 h-12 bg-white/20 rounded-full blur-md z-20 pointer-events-none"></div>
+</div>
+
+<button onClick={handleShoot} className="absolute -top-4 left-10 w-12 h-6 bg-[#b03a2e] rounded-t-lg border-b-4 border-[#7b241c] hover:bg-[#c0392b] active:translate-y-1 active:border-b-0 transition-all z-20 shadow-md cursor-pointer"></button>
+</div>
+</div>
+);
+}
+
+// ==========================================
+// 2. หน้าที่สอง: รหัสผ่าน 6 หลัก
+// ==========================================
+function PasscodePage({ onNext }) {
+const [pin, setPin] = useState("");
+const [isError, setIsError] = useState(false);
+
+const handlePress = (num) => {
+if (pin.length < 6) {
+const newPin = pin + num;
+setPin(newPin);
+if (newPin.length === 6) {
+if (newPin === CONFIG.passcode) {
+setTimeout(() => onNext(), 400);
+} else {
+setIsError(true);
+setTimeout(() => { setPin(""); setIsError(false); }, 600);
+}
+}
+}
+};
+
+const handleDelete = () => setPin(pin.slice(0, -1));
+
+return (
+<div className="min-h-screen bg-[#f8f5f0] flex flex-col items-center justify-center p-4">
+<div className="text-center mb-8">
+<svg className="w-8 h-8 text-[#8b7355] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+</svg>
+<h2 className="text-[#4a3728] text-xl font-medium tracking-widest font-serif">ENTER PASSCODE</h2>
+<p className="text-[#8b7355] text-sm mt-3 font-light tracking-wide">คำใบ้: {CONFIG.passcodeHint}</p>
+</div>
+
+<div className={`flex gap-4 mb-12 ${isError ? 'animate-shake' : ''}`}>
+{[...Array(6)].map((_, i) => (
+<div key={i} className={`w-4 h-4 rounded-full border-2 transition-colors duration-200 ${i < pin.length ? 'bg-[#4a3728] border-[#4a3728]' : 'border-[#d4c4b7] bg-[#eae0d5]'}`}></div>
+))}
+</div>
+
+<div className="grid grid-cols-3 gap-6 md:gap-8">
+{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+<button key={num} onClick={() => handlePress(num.toString())} className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-[#d4c4b7] bg-white shadow-sm flex items-center justify-center text-[#4a3728] text-2xl hover:bg-[#f5ebd9] active:bg-[#e8dcc7] transition-colors font-serif">{num}</button>
+))}
+<div></div>
+<button onClick={() => handlePress("0")} className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-[#d4c4b7] bg-white shadow-sm flex items-center justify-center text-[#4a3728] text-2xl hover:bg-[#f5ebd9] active:bg-[#e8dcc7] transition-colors font-serif">0</button>
+<button onClick={handleDelete} className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-[#8b7355] hover:text-[#4a3728] active:bg-[#e8dcc7] transition-colors">
+<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" /></svg>
+</button>
+</div>
+</div>
+);
+}
+
+// ==========================================
+// 3. หน้าที่สาม: กลักฟิล์ม Interactive (Portra Style)
+// ==========================================
+function FilmRollPage({ onNext }) {
+const [pullAmount, setPullAmount] = useState(100);
+const [isDragging, setIsDragging] = useState(false);
+const [selectedImage, setSelectedImage] = useState(null);
+
+const dragStartY = useRef(0);
+const initialPull = useRef(0);
+const [maxPull, setMaxPull] = useState(4000);
+
+useEffect(() => {
+const estimatedHeight = (CONFIG.photos.length * 320) + 800;
+setMaxPull(estimatedHeight);
+}, []);
+
+const handlePointerDown = (e) => {
+setIsDragging(true);
+dragStartY.current = e.clientY || (e.touches && e.touches[0].clientY);
+initialPull.current = pullAmount;
+document.body.style.userSelect = 'none';
+};
+
+const handlePointerMove = (e) => {
+if (!isDragging) return;
+const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+const deltaY = currentY - dragStartY.current;
+
+let newPull = initialPull.current + deltaY;
+if (newPull < 100) newPull = 100 + (newPull - 100) * 0.2;
+else if (newPull > maxPull) newPull = maxPull + (newPull - maxPull) * 0.2;
+
+setPullAmount(newPull);
+};
+
+const handlePointerUp = () => {
+if (!isDragging) return;
+setIsDragging(false);
+document.body.style.userSelect = 'auto';
+
+if (pullAmount < 100) setPullAmount(100);
+else if (pullAmount > maxPull - 100) setPullAmount(maxPull - 100);
+};
+
+const handleImageClick = (url) => {
+if (Math.abs(pullAmount - initialPull.current) < 10) setSelectedImage(url);
+};
+
+const renderSprockets = () => Array.from({ length: 300 }).map((_, i) => (
+<div key={i} className="w-2 md:w-2.5 h-3 md:h-3.5 bg-[#f8f5f0] rounded-[1px] opacity-90 flex-shrink-0 shadow-inner"></div>
+));
+
+return (
+<div
+className="min-h-screen bg-[#f8f5f0] flex flex-col items-center overflow-hidden font-sans touch-none relative"
+onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}
+onTouchMove={handlePointerMove} onTouchEnd={handlePointerUp} onTouchCancel={handlePointerUp}
+>
+<button onClick={onNext} className="absolute bottom-6 right-6 z-40 bg-[#4a3728] text-[#f8f5f0] px-6 py-3 rounded-full font-medium shadow-xl hover:bg-[#5c4033] transition-transform active:scale-95 flex items-center gap-2 pointer-events-auto">
+<span>ถัดไป</span>
+<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+</button>
+
+<div className="mt-8 text-center z-30 pointer-events-none px-4">
+<h1 className="text-3xl md:text-5xl font-bold text-[#4a3728] mb-3 tracking-tight font-serif">Gallery Roll</h1>
+<div className="inline-flex items-center gap-2 text-[#6b4423] bg-white/90 px-4 py-2 rounded-full backdrop-blur-md shadow-sm border border-[#d4c4b7]">
+<svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 17l-4 4m0 0l-4-4m4 4V3" /></svg>
+<span className="text-sm font-medium">ค่อยๆ ดึงหางฟิล์มลงมาเพื่อดูรูป</span>
+</div>
+</div>
+
+<div className="relative w-full flex flex-col items-center mt-6 z-20">
+<div className="w-[17rem] md:w-[20rem] h-44 md:h-48 bg-[#1a1a1a] rounded-xl relative shadow-[0_25px_50px_-12px_rgba(74,55,40,0.5)] border border-[#333] z-20 flex flex-col">
+<div className="absolute -right-4 md:-right-5 top-1/2 -translate-y-1/2 w-4 md:w-5 h-20 bg-[#111] rounded-r-lg border-y border-r border-[#333]"></div>
+<div className="absolute -left-3 top-1/2 -translate-y-1/2 w-3 h-16 bg-[#111] rounded-l-lg border-y border-l border-[#333]"></div>
+
+<div className="absolute top-2 left-3 right-3 h-[45%] bg-[#f4b333] rounded-t-lg flex items-start justify-between p-3 border-b border-[#cca02b]">
+<span className="text-[#333] font-bold text-xs uppercase tracking-widest origin-top-left transform translate-y-16 -rotate-90">Notes</span>
+<span className="text-[#f8f5f0] font-bold text-lg md:text-xl bg-[#111] px-2 py-0.5 rounded rotate-90 origin-right translate-y-2">C-41</span>
+</div>
+
+<div className="absolute bottom-4 left-4 text-left">
+<div className="text-gray-300 text-[10px] md:text-xs tracking-widest mb-1 rotate-180 origin-center text-right pr-2">Color Negative Film</div>
+<div className="text-[#f8f5f0] text-4xl md:text-5xl font-sans font-bold tracking-tighter">PORTRA <span className="font-medium">400</span></div>
+<div className="text-gray-400 text-xs md:text-sm font-serif font-bold italic mt-1">Kodak Professional</div>
+</div>
+
+<div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[11rem] md:w-[13rem] h-4 bg-[#0a0a0a] rounded-b-md shadow-inner border-b border-x border-[#222]">
+<div className="w-full h-1 bg-black mt-1"></div>
+</div>
+</div>
+
+<div className="absolute top-[11.5rem] md:top-[12.5rem] z-10 w-40 md:w-48 h-[100vh] pointer-events-none">
+<div
+className={`absolute bottom-full left-0 w-full flex flex-col items-center pointer-events-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+style={{ transform: `translateY(${pullAmount}px)`, transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)' }}
+onPointerDown={handlePointerDown} onTouchStart={handlePointerDown}
+>
+<div className="w-full h-[4500px] bg-[#3a1a0a] flex-shrink-0 border-x border-[#2a1205]"></div>
+<div className="w-full relative py-2 bg-[#3a1a0a] border-x border-[#2a1205]">
+<div className="absolute left-1 md:left-1.5 top-0 h-full flex flex-col gap-1.5 md:gap-2 overflow-hidden py-4 z-20 pointer-events-none">{renderSprockets()}</div>
+<div className="absolute right-1 md:right-1.5 top-0 h-full flex flex-col gap-1.5 md:gap-2 overflow-hidden py-4 z-20 pointer-events-none">{renderSprockets()}</div>
+
+<div className="h-[20rem] w-full"></div>
+
+<div className="flex flex-col-reverse gap-8 px-6 md:px-8 relative z-10 my-4">
+{CONFIG.photos.map((url, index) => (
+<div key={index} className="w-full aspect-[2/3] bg-[#222] p-1 md:p-1.5 border border-[#333] flex-shrink-0 group relative overflow-hidden transition-transform duration-300 hover:scale-[1.02] shadow-md" onClick={() => handleImageClick(url)}>
+<img src={url} alt={`Frame ${index + 1}`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none sepia-[.2]" draggable="false"/>
+<div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[#d4af37] text-[10px] md:text-xs font-mono font-bold tracking-widest opacity-80 pointer-events-none">{index + 1}A</div>
+</div>
+))}
+</div>
+</div>
+
+<div className="w-full h-20 md:h-24 relative flex-shrink-0 drop-shadow-[0_15px_15px_rgba(74,55,40,0.4)]">
+<div className="w-full h-full bg-[#3a1a0a] border-b border-[#2a1205]" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 45% 100%, 45% 45%, 0 45%)' }}></div>
+</div>
+</div>
+</div>
+</div>
+
+<div className="absolute right-3 md:right-6 top-1/2 transform -translate-y-1/2 flex flex-col-reverse gap-1.5 z-30 pointer-events-none opacity-50">
+{CONFIG.photos.map((_, i) => (
+<div key={i} className={`w-1.5 md:w-2 rounded-full transition-all duration-300 ${(pullAmount / maxPull) > (i / CONFIG.photos.length) ? 'h-4 md:h-6 bg-[#6b4423]' : 'h-1.5 md:h-2 bg-[#d4c4b7]'}`}></div>
+))}
+</div>
+
+{selectedImage && (
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-[#f8f5f0]/95 backdrop-blur-sm p-4 md:p-10 pointer-events-auto" onClick={() => setSelectedImage(null)}>
+<button className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#4a3728] shadow hover:bg-[#f5ebd9] transition-colors" onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}>
+<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+</button>
+<img src={selectedImage} alt="Enlarged" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_20px_50px_rgba(74,55,40,0.3)] sepia-[.1]" onClick={(e) => e.stopPropagation()} />
+</div>
+)}
+</div>
+);
+}
+
+// ==========================================
+// 4. หน้าที่สี่: กระดาษจดหมาย
+// ==========================================
+function LetterPage({ onNext }) {
+const [text, setText] = useState(CONFIG.letterText);
+
+return (
+<div className="min-h-screen bg-[#e8dcc7] flex flex-col items-center justify-center p-4 relative">
+<div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#8b7355 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+
+<div className="w-full max-w-md bg-[#faf6ed] min-h-[60vh] rounded-sm shadow-[0_20px_50px_rgba(74,55,40,0.2)] relative overflow-hidden flex flex-col border border-[#d4c4b7] z-10">
+<div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(transparent, transparent 31px, #e2d5c8 31px, #e2d5c8 32px)', marginTop: '4rem' }}></div>
+
+<div className="h-12 w-full border-b-2 border-[#b03a2e]/40 flex items-end px-8 pb-1 bg-[#f5ebd9]/50">
+<span className="text-[#8b5a2b] text-sm font-serif italic">To You...</span>
+</div>
+
+<textarea
+value={text}
+onChange={(e) => setText(e.target.value)}
+className="flex-1 w-full bg-transparent resize-none outline-none px-8 pt-[6px] pb-8 text-[#4a3728] leading-[32px] text-lg font-serif z-10"
+placeholder="เขียนข้อความของคุณที่นี่..."
+></textarea>
+</div>
+
+<button onClick={onNext} className="mt-8 bg-[#4a3728] text-[#f8f5f0] border border-[#2c1e16] px-8 py-3 rounded-full font-medium hover:bg-[#6b4423] transition-colors shadow-lg z-10">
+ฟังเพลงของเรา
+</button>
+</div>
+);
+}
+
+// ==========================================
+// 5. หน้าที่ห้า: หน้าเล่นเพลง (YouTube)
+// ==========================================
+function MusicPage({ onNext }) {
+return (
+<div className="min-h-screen bg-[#f8f5f0] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+<div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#d4c4b7]/30 rounded-full blur-3xl pointer-events-none"></div>
+
+<div className="text-center z-10 mb-8">
+<svg className="w-10 h-10 text-[#8b5a2b] mx-auto mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+</svg>
+<h2 className="text-2xl md:text-3xl text-[#4a3728] font-serif italic">Our Song</h2>
+</div>
+
+<div className="w-full max-w-md aspect-video rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(74,55,40,0.2)] z-10 mb-10 border-4 border-[#fffbf0] bg-[#e8dcc7] p-1">
+<div className="w-full h-full rounded-xl overflow-hidden">
+<iframe width="100%" height="100%" src={CONFIG.youtubeEmbedUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+</div>
+</div>
+
+<button onClick={onNext} className="z-10 bg-[#4a3728] text-[#f8f5f0] border border-[#2c1e16] px-8 py-3 rounded-full font-medium hover:bg-[#6b4423] transition-colors shadow-lg">
+ดูเวลาของเรา
+</button>
+</div>
+);
+}
+
+// ==========================================
+// 6. หน้าที่หก: นับเวลา Moments
+// ==========================================
+function MomentsPage({ onHome }) {
+const [timeLeft, setTimeLeft] = useState({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+useEffect(() => {
+const calculateTime = () => {
+const start = new Date(CONFIG.startDate);
+const now = new Date();
+let diff = now.getTime() - start.getTime();
+
+if (diff > 0) {
+let years = now.getFullYear() - start.getFullYear();
+let months = now.getMonth() - start.getMonth();
+let days = now.getDate() - start.getDate();
+let hours = now.getHours() - start.getHours();
+let minutes = now.getMinutes() - start.getMinutes();
+let seconds = now.getSeconds() - start.getSeconds();
+
+if (seconds < 0) { seconds += 60; minutes--; }
+if (minutes < 0) { minutes += 60; hours--; }
+if (hours < 0) { hours += 24; days--; }
+if (days < 0) {
+const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+days += prevMonth.getDate();
+months--;
+}
+if (months < 0) { months += 12; years--; }
+
+setTimeLeft({ years, months, days, hours, minutes, seconds });
+}
+};
+
+calculateTime();
+const timer = setInterval(calculateTime, 1000);
+return () => clearInterval(timer);
+}, []);
+
+return (
+<div className="min-h-screen bg-[#f8f5f0] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+<div className="absolute top-20 left-10 w-32 h-32 bg-[#d4c4b7]/40 rounded-full blur-3xl pointer-events-none"></div>
+<div className="absolute bottom-20 right-10 w-40 h-40 bg-[#e8dcc7]/60 rounded-full blur-3xl pointer-events-none"></div>
+
+<div className="text-center z-10 mb-12">
+<svg className="w-12 h-12 text-[#b03a2e] mx-auto mb-6 animate-pulse drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+</svg>
+<h2 className="text-2xl md:text-3xl text-[#4a3728] font-serif italic mb-2">We've been together for</h2>
+</div>
+
+<div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-6 z-10 w-full max-w-4xl px-4">
+{[
+{ label: 'YEARS', value: timeLeft.years },
+{ label: 'MONTHS', value: timeLeft.months },
+{ label: 'DAYS', value: timeLeft.days },
+{ label: 'HOURS', value: timeLeft.hours },
+{ label: 'MINUTES', value: timeLeft.minutes },
+{ label: 'SECONDS', value: timeLeft.seconds }
+].map((item, idx) => (
+<div key={idx} className="bg-white/80 backdrop-blur-md border border-[#d4c4b7] rounded-2xl p-4 md:p-6 flex flex-col items-center justify-center shadow-[0_10px_30px_rgba(74,55,40,0.1)] hover:scale-105 transition-transform duration-300">
+<span className="text-3xl md:text-5xl font-bold text-[#4a3728] mb-1 md:mb-2 font-mono tabular-nums">{String(item.value).padStart(2, '0')}</span>
+<span className="text-[10px] md:text-xs tracking-widest text-[#8b5a2b] font-medium font-serif">{item.label}</span>
+</div>
+))}
+</div>
+
+<div className="mt-12 text-[#8b7355] text-sm font-serif italic z-10">... and counting</div>
+
+<button onClick={onHome} className="mt-16 bg-[#4a3728] text-[#f8f5f0] border border-[#2c1e16] px-10 py-3 rounded-full font-medium hover:bg-[#6b4423] transition-colors shadow-lg z-10 flex items-center gap-2">
+<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+<span>กลับไปหน้าแรก</span>
+</button>
+</div>
+);
+}
+
+// ==========================================
+// 🚀 Main Application Controller
+// ==========================================
+function App() {
+const [currentPage, setCurrentPage] = useState(0);
+
+const renderPage = () => {
+switch (currentPage) {
+case 0: return <CameraPage onNext={() => setCurrentPage(1)} />;
+case 1: return <PasscodePage onNext={() => setCurrentPage(2)} />;
+case 2: return <FilmRollPage onNext={() => setCurrentPage(3)} />;
+case 3: return <LetterPage onNext={() => setCurrentPage(4)} />;
+case 4: return <MusicPage onNext={() => setCurrentPage(5)} />;
+case 5: return <MomentsPage onHome={() => setCurrentPage(0)} />;
+default: return <CameraPage onNext={() => setCurrentPage(1)} />;
+}
+};
+
+return (
+<div className="w-full h-full bg-[#f8f5f0] animate-fadeIn">
+{renderPage()}
+</div>
+);
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
